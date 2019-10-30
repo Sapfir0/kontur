@@ -1,7 +1,0 @@
-D:\Users\Sapfir\chromiumDownloads\GitTask.csproj\bin\Debug\GitTask.exe
-D:\Users\Sapfir\chromiumDownloads\GitTask.csproj\bin\Debug\GitTask.pdb
-D:\Users\Sapfir\chromiumDownloads\GitTask.csproj\bin\Debug\nunit.framework.dll
-D:\Users\Sapfir\chromiumDownloads\GitTask.csproj\obj\Debug\GitTask.csprojAssemblyReference.cache
-D:\Users\Sapfir\chromiumDownloads\GitTask.csproj\obj\Debug\GitTask.csproj.CopyComplete
-D:\Users\Sapfir\chromiumDownloads\GitTask.csproj\obj\Debug\GitTask.exe
-D:\Users\Sapfir\chromiumDownloads\GitTask.csproj\obj\Debug\GitTask.pdb

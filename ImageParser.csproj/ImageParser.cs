@@ -11,35 +11,36 @@ namespace ImageParser
 {
     public class ImageParser : IImageParser
     {
-        private class BMP : AbstractImage  {  // вроде я не изпользую ооп преимущства
+        public class BMP : AbstractImage  {  // вроде я не изпользую ооп преимущства
             // смещение, длина
-            (int, int) type = (0, 2);
+            (int, int) format = (0, 2);
             (int, int) width = (18, 4);
             (int, int) height = (22, 4);
         }
         
-        private class PNG : AbstractImage  {
+        public class PNG : AbstractImage  {
             // смещение, длина
-            (int, int) type = (0, 7);
+            (int, int) format = (0, 7);
             (int, int) width = (17, 21);
             (int, int) height = (21, 25);
         }
         
-        private class GIF : AbstractImage  {
+        public class GIF : AbstractImage  {
             // смещение, длина
-            (int, int) type = (0, 6);
-            (int, int) width = (17, 21);
-            (int, int) height = (21, 25);
+            (int, int) format = (0, 6);
+            (int, int) width;
+            (int, int) height;
         }
 
-        private abstract class AbstractImage {
+        public abstract class AbstractImage {
             // смещение, длина
-            (int, int) type = (0, 0);
-            (int, int)  width = (0, 0);
-            (int, int)  height = (0, 0);
+            public (int, int) format = (0, 0);
+            public (int, int) width = (0, 0);
+            public (int, int) height = (0, 0);
+            public long Size = 0;
         } 
         
-        private string detectImageType(Stream stream) {
+        private AbstractImage detectImageType(Stream stream) {
             List<string> header = new List<string>();
             int headerIsEnd = 8; // самый длинный хедер
             for (int i = 0; i < headerIsEnd; i++){
@@ -51,10 +52,12 @@ namespace ImageParser
             const string gifMarker = "474946";
             const string bmpMarker = "424d0a";
             if (result.Contains(pngMarker))  {
-                return "Png";
+                PNG png;
+                return png;
             }
             else if (result.Contains(gifMarker))  {
-                return "Gif";
+                PNG png;
+                return png;
             }
             else if(result.Contains(bmpMarker))  {
                 return "Bmp";
@@ -68,33 +71,19 @@ namespace ImageParser
             return stream.Length;
         }
 
-        private (int, int) getImageWidthHeight(Stream stream, AbstractImage type) {
-            List<string> hexTest = new List<string>();
-            const string IHDRmarker = "49484452";
-            bool IHDRstarted = false;
-            int count = 0;  // счетчик для правильного разделения длины и высоты
-            List<string> hexHeight = new List<string>();
+        private (int, int) getImageWidthHeight(Stream stream, AbstractImage imageFormat) {
             List<string> hexWidth = new List<string>();
-
-            for (int i = 8; i < 24; i++){  // нужно по-умному использовать seek
+            List<string> hexHeight = new List<string>();
+            for (int i = imageFormat.width[0]; i < imageFormat.width[1]; i++) {
                 string hex = $"{stream.ReadByte():X2}";
-                hexTest.Add(hex);
-                string hexString = string.Join("", hexTest.ToArray());
-                
-                if (hexString.Contains(IHDRmarker) && !IHDRstarted)  {
-                    IHDRstarted = true;
-                    continue;
-                }
-                if (IHDRstarted)  {
-                    if (count < 4) {
-                        hexWidth.Add(hex);
-                    }
-                    else if (count < 8) {
-                        hexHeight.Add(hex);
-                    }
-                    count += 1;
-                }
+                hexWidth.Add(hex);
             }
+
+            for (int i = imageFormat.height[0]; i < imageFormat.height[1]; i++) {
+                string hex = $"{stream.ReadByte():X2}";
+                hexHeight.Add(hex);
+            }
+            
             string hexWidthString = string.Join("", hexWidth.ToArray());
             string hexHeightString = string.Join("", hexHeight.ToArray());
             int w = Convert.ToInt32(hexWidthString, 16);
@@ -111,6 +100,7 @@ namespace ImageParser
         
         public string GetImageInfo(Stream stream) {
             ImageInfo imgInfo = new ImageInfo();
+            
             (int width, int height) = getImageWidthHeight(stream);
 
             imgInfo.Format = detectImageType(stream);

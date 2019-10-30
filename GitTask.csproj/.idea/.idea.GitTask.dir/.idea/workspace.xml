@@ -71,7 +71,7 @@
       <updated>1572419150432</updated>
       <workItem from="1572419156185" duration="49000" />
       <workItem from="1572419665615" duration="500000" />
-      <workItem from="1572422721013" duration="9149000" />
+      <workItem from="1572422721013" duration="14212000" />
     </task>
     <servers />
   </component>
@@ -88,6 +88,19 @@
           <properties exception="System.Threading.ThreadAbortException" displayValue="System.Threading.ThreadAbortException" />
           <option name="timeStamp" value="1" />
         </breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/Git.cs</url>
+          <line>42</line>
+          <properties documentPath="$PROJECT_DIR$/Git.cs" initialLine="36">
+            <startOffsets>
+              <option value="1863" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1932" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>

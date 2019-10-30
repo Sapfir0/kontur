@@ -72,7 +72,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1572428034458</updated>
-      <workItem from="1572428035940" duration="7247000" />
+      <workItem from="1572428035940" duration="9531000" />
     </task>
     <servers />
   </component>
@@ -89,6 +89,19 @@
           <properties exception="System.Threading.ThreadAbortException" displayValue="System.Threading.ThreadAbortException" />
           <option name="timeStamp" value="1" />
         </breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/ImageParser.cs</url>
+          <line>23</line>
+          <properties documentPath="$PROJECT_DIR$/ImageParser.cs" initialLine="23">
+            <startOffsets>
+              <option value="833" />
+            </startOffsets>
+            <endOffsets>
+              <option value="854" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>

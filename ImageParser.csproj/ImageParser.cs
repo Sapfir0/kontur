@@ -1,14 +1,44 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.PerformanceData;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
+using NUnit.Framework;
 
 
 namespace ImageParser
 {
     public class ImageParser : IImageParser
     {
+        private class BMP : AbstractImage  {  // вроде я не изпользую ооп преимущства
+            // смещение, длина
+            (int, int) type = (0, 2);
+            (int, int) width = (18, 4);
+            (int, int) height = (22, 4);
+        }
+        
+        private class PNG : AbstractImage  {
+            // смещение, длина
+            (int, int) type = (0, 7);
+            (int, int) width = (17, 21);
+            (int, int) height = (21, 25);
+        }
+        
+        private class GIF : AbstractImage  {
+            // смещение, длина
+            (int, int) type = (0, 6);
+            (int, int) width = (17, 21);
+            (int, int) height = (21, 25);
+        }
+
+        private abstract class AbstractImage {
+            // смещение, длина
+            (int, int) type = (0, 0);
+            (int, int)  width = (0, 0);
+            (int, int)  height = (0, 0);
+        } 
+        
         private string detectImageType(Stream stream) {
             List<string> header = new List<string>();
             int headerIsEnd = 8; // самый длинный хедер
@@ -38,43 +68,55 @@ namespace ImageParser
             return stream.Length;
         }
 
-        private List<int> getImageWidthHeight(Stream stream) {
+        private (int, int) getImageWidthHeight(Stream stream, AbstractImage type) {
             List<string> hexTest = new List<string>();
             const string IHDRmarker = "49484452";
             bool IHDRstarted = false;
-            int count = 0;
-            List<string> sizeParams = new List<string>(8);
-            for (int i = 8; i < 24; i++){
+            int count = 0;  // счетчик для правильного разделения длины и высоты
+            List<string> hexHeight = new List<string>();
+            List<string> hexWidth = new List<string>();
+
+            for (int i = 8; i < 24; i++){  // нужно по-умному использовать seek
                 string hex = $"{stream.ReadByte():X2}";
-                hexTest.Append(hex);
-                string hexString = "kkk";//string.Join("", hexTest.ToArray());
+                hexTest.Add(hex);
+                string hexString = string.Join("", hexTest.ToArray());
                 
-                if (hexString.Contains(IHDRmarker))  {
+                if (hexString.Contains(IHDRmarker) && !IHDRstarted)  {
                     IHDRstarted = true;
+                    continue;
                 }
-                if (IHDRstarted && count < 8)  {
-                    sizeParams.Append(hex);
+                if (IHDRstarted)  {
+                    if (count < 4) {
+                        hexWidth.Add(hex);
+                    }
+                    else if (count < 8) {
+                        hexHeight.Add(hex);
+                    }
                     count += 1;
                 }
             }
-            List<int> size = new List<int>(2);
-            size[0] = 0;
-            size[1] = 1;
-            return size;
+            string hexWidthString = string.Join("", hexWidth.ToArray());
+            string hexHeightString = string.Join("", hexHeight.ToArray());
+            int w = Convert.ToInt32(hexWidthString, 16);
+            int h = Convert.ToInt32(hexHeightString, 16);
+            return (w, h);
         }
 
         private class ImageInfo {
-            //public int Height;
-            //public int Width;
+            public int Height;
+            public int Width;
             public string Format;
             public long Size;
         }
         
         public string GetImageInfo(Stream stream) {
-            Console.WriteLine("Я тут");
             ImageInfo imgInfo = new ImageInfo();
+            (int width, int height) = getImageWidthHeight(stream);
+
             imgInfo.Format = detectImageType(stream);
             imgInfo.Size = getImageSize(stream);
+            imgInfo.Width = width;
+            imgInfo.Height = height;
             string json = JsonConvert.SerializeObject(imgInfo);
             return json;
         }

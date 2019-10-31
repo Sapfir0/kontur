@@ -13,34 +13,34 @@ namespace ImageParser
     {
         public class BMP : AbstractImage  {  // вроде я не изпользую ооп преимущства
             // смещение, длина
-            public const string format = "Bmp";
-            public (int, int) formatBytes = (0, 2);
-            public (int, int) width = (18, 4);
-            public (int, int) height = (22, 4);
+            public override string format => "Bmp";
+            public override (int, int) formatBytes => (0, 2);
+            public override (int, int) width => (18, 4);
+            public override (int, int) height => (22, 4);
         }
         
         public class PNG : AbstractImage  {
             // смещение, длина
-            public  const string format = "Png";
-            public (int, int) formatBytes = (0, 7);
-            public (int, int) width = (17, 21);
-            public (int, int) height = (21, 25);
+            public override string format => "Png";
+            public override (int, int) formatBytes => (0, 7);
+            public override (int, int) width => (16, 21);
+            public override (int, int) height => (22, 26);
         }
         
         public class GIF : AbstractImage  {
             // смещение, длина
-            public  const string format = "Gif";
-            public (int, int) formatBytes = (0, 6);
-            public (int, int) width;
-            public (int, int) height;
+            public override string format => "Gif";
+
+            public override (int, int) formatBytes => (0, 6);
+            
         }
 
-        public abstract class AbstractImage {
+        public class AbstractImage {
             // смещение, длина
-            public (int, int) formatBytes = (0, 0);
-            public (int, int) width = (0, 0);
-            public (int, int) height = (0, 0);
-            public long Size = 0.0;
+            public virtual string format => "Undefined";
+            public virtual (int, int) formatBytes => (0, 0); 
+            public virtual (int, int) width => (0, 0);
+            public virtual (int, int) height => (0, 0);
         } 
         
         private AbstractImage detectImageType(Stream stream) {
@@ -67,8 +67,7 @@ namespace ImageParser
                 return bmp;
             }
             else {
-                AbstractImage abi = new AbstractImage();
-                return AbstractImage;
+                throw new Exception("Undefined image format");
             }
         }
 
@@ -79,12 +78,24 @@ namespace ImageParser
         private (int, int) getImageWidthHeight(Stream stream, AbstractImage imageFormat) {
             List<string> hexWidth = new List<string>();
             List<string> hexHeight = new List<string>();
-            for (int i = imageFormat.width[0]; i < imageFormat.width[1]; i++) {
+            
+            stream.Position = imageFormat.width.Item1;
+            while (stream.Position < imageFormat.width.Item2) {
+                
+            }
+            
+            for (int i = imageFormat.width.Item1; i < imageFormat.width.Item2; i++) {
                 string hex = $"{stream.ReadByte():X2}";
                 hexWidth.Add(hex);
             }
 
-            for (int i = imageFormat.height[0]; i < imageFormat.height[1]; i++) {
+
+            for (int i = 0; i < 10; i++) {
+                string hex = $"{stream.ReadByte():X2}";
+                Console.WriteLine(hex);
+            }
+            
+            for (int i = imageFormat.height.Item1; i < imageFormat.height.Item2; i++) {
                 string hex = $"{stream.ReadByte():X2}";
                 hexHeight.Add(hex);
             }
@@ -105,10 +116,11 @@ namespace ImageParser
         
         public string GetImageInfo(Stream stream) {
             ImageInfo imgInfo = new ImageInfo();
-            
-            (int width, int height) = getImageWidthHeight(stream);
 
-            imgInfo.Format = detectImageType(stream);
+            var imageFormat = detectImageType(stream);
+            (int width, int height) = getImageWidthHeight(stream, imageFormat);
+
+            imgInfo.Format = imageFormat.format;
             imgInfo.Size = getImageSize(stream);
             imgInfo.Width = width;
             imgInfo.Height = height;

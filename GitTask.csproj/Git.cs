@@ -11,22 +11,23 @@ namespace GitTask
     public class Git
     {
         private List<Dictionary<int, int>> gitTree = new List<Dictionary<int, int>>();  // {номерФайла: содеримоеФайла}}
-        private Dictionary<int, int> virtualFiles = new Dictionary<int, int>(); // название файла : содержимое в текущий момент
+        private List<int> virtualFilesContent = new List<int>() ; // название файла==index : содержимое в текущий момент
         
         public Git(int filesCount) {
             for (int filename = 0; filename < filesCount; filename++) {
-                virtualFiles.Add(filename, 0);  // 0 по-умолчанию, надеюсь, сойдет
+                virtualFilesContent.Add(0);  // 0 по-умолчанию в файле, надеюсь, сойдет
             }
         }
         public void Update(int fileNumber, int value) {
-            virtualFiles[fileNumber] = value;
+            virtualFilesContent[fileNumber] = value;
         }
         public int Commit() {
             Dictionary<int, int> filesDescription = new Dictionary<int, int>(); // название файла : содержимое файла
-
-            foreach (KeyValuePair<int, int> file in virtualFiles) {
-                int filename = file.Key;
-                int textContent = file.Value;
+            // пробагемся по текущим файликам и по файликам с прошлого коммита(берем -1 элементу гиттрии)
+            // если файл отличается, то запосминаем его состояние
+            for(int i = 0; i< virtualFilesContent.Count; i++) {
+                int filename = i;
+                int textContent = virtualFilesContent[i];
                 filesDescription.Add(filename, textContent);
             }
             gitTree.Add(filesDescription);

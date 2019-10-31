@@ -13,31 +13,34 @@ namespace ImageParser
     {
         public class BMP : AbstractImage  {  // вроде я не изпользую ооп преимущства
             // смещение, длина
-            (int, int) format = (0, 2);
-            (int, int) width = (18, 4);
-            (int, int) height = (22, 4);
+            public const string format = "Bmp";
+            public (int, int) formatBytes = (0, 2);
+            public (int, int) width = (18, 4);
+            public (int, int) height = (22, 4);
         }
         
         public class PNG : AbstractImage  {
             // смещение, длина
-            (int, int) format = (0, 7);
-            (int, int) width = (17, 21);
-            (int, int) height = (21, 25);
+            public  const string format = "Png";
+            public (int, int) formatBytes = (0, 7);
+            public (int, int) width = (17, 21);
+            public (int, int) height = (21, 25);
         }
         
         public class GIF : AbstractImage  {
             // смещение, длина
-            (int, int) format = (0, 6);
-            (int, int) width;
-            (int, int) height;
+            public  const string format = "Gif";
+            public (int, int) formatBytes = (0, 6);
+            public (int, int) width;
+            public (int, int) height;
         }
 
         public abstract class AbstractImage {
             // смещение, длина
-            public (int, int) format = (0, 0);
+            public (int, int) formatBytes = (0, 0);
             public (int, int) width = (0, 0);
             public (int, int) height = (0, 0);
-            public long Size = 0;
+            public long Size = 0.0;
         } 
         
         private AbstractImage detectImageType(Stream stream) {
@@ -52,18 +55,20 @@ namespace ImageParser
             const string gifMarker = "474946";
             const string bmpMarker = "424d0a";
             if (result.Contains(pngMarker))  {
-                PNG png;
+                PNG png = new PNG();
                 return png;
             }
             else if (result.Contains(gifMarker))  {
-                PNG png;
-                return png;
+                GIF gif = new GIF();
+                return gif;
             }
             else if(result.Contains(bmpMarker))  {
-                return "Bmp";
+                BMP bmp = new BMP();
+                return bmp;
             }
-            else  {
-                return "Undefined format";
+            else {
+                AbstractImage abi = new AbstractImage();
+                return AbstractImage;
             }
         }
 

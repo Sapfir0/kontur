@@ -10,7 +10,7 @@ namespace GitTask
 {
     public class Git
     {
-        private Dictionary<int, Dictionary<int, int>> gitTree = new Dictionary<int, Dictionary<int, int>>(); // {номерКоммита: {номерФайла: содеримоеФайла}}
+        private List<Dictionary<int, int>> gitTree = new List<Dictionary<int, int>>();  // {номерФайла: содеримоеФайла}}
         private Dictionary<int, int> virtualFiles = new Dictionary<int, int>(); // название файла : содержимое в текущий момент
         
         public Git(int filesCount) {
@@ -29,9 +29,8 @@ namespace GitTask
                 int textContent = file.Value;
                 filesDescription.Add(filename, textContent);
             }
-
-            gitTree.Add(gitTree.Count , filesDescription);
-
+            gitTree.Add(filesDescription);
+            
             return gitTree.Count - 1;
         }
 
@@ -39,7 +38,7 @@ namespace GitTask
             int fileContent = -1;
             try {
                 Dictionary<int, int>
-                    ourCommit = gitTree.Values.ElementAt(commitNumber); // название файла : содержимое файла
+                    ourCommit = gitTree.ElementAt(commitNumber); // название файла : содержимое файла
                 fileContent = ourCommit[fileNumber];
 
             }

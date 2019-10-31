@@ -23,8 +23,8 @@ namespace ImageParser
             // смещение, длина
             public override string format => "Png";
             public override (int, int) formatBytes => (0, 7);
-            public override (int, int) width => (16, 21);
-            public override (int, int) height => (22, 26);
+            public override (int, int) width => (16, 4);
+            public override (int, int) height => (20, 4);
         }
         
         public class GIF : AbstractImage  {
@@ -80,22 +80,13 @@ namespace ImageParser
             List<string> hexHeight = new List<string>();
             
             stream.Position = imageFormat.width.Item1;
-            while (stream.Position < imageFormat.width.Item2) {
-                
-            }
-            
-            for (int i = imageFormat.width.Item1; i < imageFormat.width.Item2; i++) {
+            for (int i = imageFormat.width.Item1; i < imageFormat.width.Item2 + imageFormat.width.Item1; i++) {
                 string hex = $"{stream.ReadByte():X2}";
                 hexWidth.Add(hex);
             }
-
-
-            for (int i = 0; i < 10; i++) {
-                string hex = $"{stream.ReadByte():X2}";
-                Console.WriteLine(hex);
-            }
             
-            for (int i = imageFormat.height.Item1; i < imageFormat.height.Item2; i++) {
+            stream.Position = imageFormat.height.Item1;
+            for (int i = imageFormat.height.Item1; i < imageFormat.height.Item2 + imageFormat.height.Item1; i++) {
                 string hex = $"{stream.ReadByte():X2}";
                 hexHeight.Add(hex);
             }

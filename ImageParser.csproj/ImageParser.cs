@@ -75,22 +75,23 @@ namespace ImageParser
             return stream.Length;
         }
 
+        private List<string> readBytes(Stream stream, int byteStart, int byteLength) {
+            stream.Position = byteStart;
+            List<string> hex = new List<string>();
+            for (int i = byteStart; i < byteStart + byteLength; i++) {
+                hex.Add($"{stream.ReadByte():X2}");
+            }
+
+            return hex;
+        }
+
         private (int, int) getImageWidthHeight(Stream stream, AbstractImage imageFormat) {
             List<string> hexWidth = new List<string>();
             List<string> hexHeight = new List<string>();
-            
-            stream.Position = imageFormat.width.Item1;
-            for (int i = imageFormat.width.Item1; i < imageFormat.width.Item2 + imageFormat.width.Item1; i++) {
-                string hex = $"{stream.ReadByte():X2}";
-                hexWidth.Add(hex);
-            }
-            
-            stream.Position = imageFormat.height.Item1;
-            for (int i = imageFormat.height.Item1; i < imageFormat.height.Item2 + imageFormat.height.Item1; i++) {
-                string hex = $"{stream.ReadByte():X2}";
-                hexHeight.Add(hex);
-            }
-            
+
+            hexWidth = readBytes(stream, imageFormat.width.Item1, imageFormat.width.Item2);
+            hexHeight = readBytes(stream, imageFormat.height.Item1, imageFormat.height.Item2);
+
             string hexWidthString = string.Join("", hexWidth.ToArray());
             string hexHeightString = string.Join("", hexHeight.ToArray());
             int w = Convert.ToInt32(hexWidthString, 16);

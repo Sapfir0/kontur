@@ -1,17 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.PerformanceData;
 using System.IO;
-using System.Linq;
 using Newtonsoft.Json;
-using NUnit.Framework;
 
 
 namespace ImageParser
 {
     public class ImageParser : IImageParser
     {
-        public class BMP : AbstractImage  {  // вроде я не изпользую ооп преимущства
+        public class BMP : AbstractImage  {  
             // смещение, длина
             public override string format => "Bmp";
             public override (int, int) formatBytes => (0, 2);
@@ -53,7 +50,7 @@ namespace ImageParser
             var result = string.Join("", header.ToArray());
             const string pngMarker = "89504E470D0A1A0A";
             const string gifMarker = "474946";
-            const string bmpMarker = "424d0a";
+            const string bmpMarker = "424D";
             if (result.Contains(pngMarker))  {
                 PNG png = new PNG();
                 return png;

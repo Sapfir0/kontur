@@ -1,15 +1,15 @@
-﻿using VirtualMachine.Core;
+﻿using System;
+using VirtualMachine.Core;
 
 namespace VirtualMachine.CPU.InstructionSet.Instructions
 {
     public class exit : InstructionBase
     {
-        public exit() : base(1, OperandType.Ignored, OperandType.Ignored, OperandType.Ignored)
+        public exit() : base(8, OperandType.Ignored, OperandType.Ignored, OperandType.Ignored)
         { }
 
-        protected override void ExecuteInternal(ICpu _, IMemory __, Operand src, Operand dst, Operand ___)
-        {
-            
+        protected override void ExecuteInternal(ICpu _, IMemory __, Operand src, Operand dst, Operand ___) {
+            Environment.Exit(0);
         }
     }
 }

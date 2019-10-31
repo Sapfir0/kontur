@@ -10,49 +10,43 @@ namespace GitTask
 {
     public class Git
     {
-        private Dictionary<int, Dictionary<int, string>> gitTree = new Dictionary<int, Dictionary<int, string>>(); // {номерКоммита: {номерФайла: содеримоеФайла}}
+        private Dictionary<int, Dictionary<int, int>> gitTree = new Dictionary<int, Dictionary<int, int>>(); // {номерКоммита: {номерФайла: содеримоеФайла}}
+        private Dictionary<int, int> virtualFiles = new Dictionary<int, int>(); // название файла : содержимое в текущий момент
+        
         public Git(int filesCount) {
-            for (int i = 0; i < filesCount; i++) {
-                string filepath = "./" + i + ".txt";
-                FileStream fs = File.Create(filepath);
-                fs.Close();
+            for (int filename = 0; filename < filesCount; filename++) {
+                virtualFiles.Add(filename, 0);  // 0 по-умолчанию, надеюсь, сойдет
             }
         }
         public void Update(int fileNumber, int value) {
-            string filepath = "./" + fileNumber + ".txt";
-            using (FileStream fs = File.Open(filepath, FileMode.Open, FileAccess.Write)) {
-                Byte[] info = new UTF8Encoding(true).GetBytes(value.ToString());
-                fs.Write(info, 0, info.Length);
-            }
+            virtualFiles[fileNumber] = value;
         }
         public int Commit() {
-            FileInfo[] listdir = new DirectoryInfo(@"./").GetFiles();
-            Dictionary<int, string> filesDescription = new Dictionary<int, string>(listdir.Length); // название файла : содержимое файла
-            
-            foreach (var file in listdir) {
-                if (new FileInfo(file.Name).Length == 0)
-                {
-                    Console.WriteLine("Пытаемся считать пустой файл");
-                    return -1;
-                }
-                string textContent = File.ReadLines(file.Name).First();    //если предположить по примеру что заполнятеся только верхняя строка, то берем просто первый элемент 
+            Dictionary<int, int> filesDescription = new Dictionary<int, int>(); // название файла : содержимое файла
 
-                string withoutExtension = file.Name.Split('.')[0];
-                Console.WriteLine(file.Name, withoutExtension);
-                Console.WriteLine(withoutExtension);
-                filesDescription.Add(Convert.ToInt32(withoutExtension), textContent);
+            foreach (KeyValuePair<int, int> file in virtualFiles) {
+                int filename = file.Key;
+                int textContent = file.Value;
+                filesDescription.Add(filename, textContent);
             }
 
-            gitTree.Add(gitTree.Count + 1, filesDescription);
+            gitTree.Add(gitTree.Count , filesDescription);
 
-            return gitTree.Count + 1;
+            return gitTree.Count - 1;
         }
 
         public int Checkout(int commitNumber, int fileNumber) {
-            Console.WriteLine(gitTree.Values.Count);
-            Dictionary<int, string> ourCommit = gitTree.Values.ElementAt(commitNumber); // название файла : содержимое файла
-            int fileContent = ourCommit.Keys.ElementAt(fileNumber);
-            return fileContent;
+            int fileContent = -1;
+            try {
+                Dictionary<int, int>
+                    ourCommit = gitTree.Values.ElementAt(commitNumber); // название файла : содержимое файла
+                fileContent = ourCommit[fileNumber];
+
+            }
+            catch (ArgumentOutOfRangeException) {
+                throw new ArgumentException();
+            }
+            return fileContent;  // надеюсь что не вернется -1
 
         }
     }

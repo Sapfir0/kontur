@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -6,10 +7,11 @@ namespace GitTask
 {
     class Program
     {
-        static void Main(string[] args)
-        {
-            var commandNames = Regex.Matches(Console.ReadLine(), @"\w+").Cast<Match>().Select(x => x.Value).ToArray();
-            var commandArgs = Regex.Matches(Console.ReadLine(), @"\[([\d,]*)\]").Cast<Match>()
+        static void Main(string[] args) {
+            string cn = "[\"Git\",\"Update\",\"Commit\",\"Update\",\"Checkout\"]";
+            string ca = "[[3],[0,5],[],[0,6],[2,0]]";
+            var commandNames = Regex.Matches(cn, @"\w+").Cast<Match>().Select(x => x.Value).ToArray();
+            var commandArgs = Regex.Matches(ca, @"\[([\d,]*)\]").Cast<Match>()
                 .Select(
                     x => x.Groups[1].Value
                         .Split(',')

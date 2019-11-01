@@ -36,25 +36,25 @@ namespace GitTask
         }
 
         public int Checkout(int commitNumber, int fileNumber) {
-            int fileContent = -1;
-            try {
-                for (int i = 0; i < gc[fileNumber].Count; i++) {
-                    
-                    if (gc[fileNumber][i].Item1 == commitNumber) {
-                        return gc[fileNumber][i].Item2;
-                    }
+            int fileContent = 0;
 
+            for (int i = 0; i < gc[fileNumber].Count; i++) {
+                try {
+                    if (gc[fileNumber][i].Item1 == commitNumber) {
+                        fileContent = gc[fileNumber][i].Item2;
+                    }
+                }
+                catch (ArgumentOutOfRangeException) {
+                    throw new ArgumentException();
                 }
 
             }
-            catch (ArgumentOutOfRangeException) {
+
+            if (fileContent == -1 || commitNumber >= commitCount) {
                 throw new ArgumentException();
             }
 
-            if (fileContent == -1) {
-                throw new ArgumentException();
-            }
-            return fileContent;  // надеюсь что не вернется -1
+        return fileContent;  // надеюсь что не вернется -1
 
         }
     }

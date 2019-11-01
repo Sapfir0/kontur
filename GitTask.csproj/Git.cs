@@ -8,29 +8,32 @@ using System.Windows.Forms.VisualStyles;
 
 namespace GitTask
 {
-    public class Git
-    {
-        private List<Dictionary<int, int>> gitTree = new List<Dictionary<int, int>>();  // {номерФайла: содеримоеФайла}}
-        private List<int> virtualFilesContent = new List<int>() ; // название файла==index : содержимое в текущий момент
-        
-        public Git(int filesCount) {
+    public class Git    {
+        List<List<(int, int)>> gc = new List<List<(int, int)>>(); 
+        // [[{ номер коммита : содержимое файла }, { номер коммита : содержимое файла }  ]    // индекс во внешнем листе - номер файла
+        // [{ номер коммита : содержимое файла }, { номер коммита : содержимое файла } ]]     // индекс во внутренних, количество изменения файла
+        List<int> virtualFiles = new List<int>();
+
+        public Git(int filesCount) {// индекс листа - название файла
             for (int filename = 0; filename < filesCount; filename++) {
-                virtualFilesContent.Add(0);  // 0 по-умолчанию в файле, надеюсь, сойдет
+                List<(int, int)> temp = new List<(int, int)>();
+                temp.Add((-1, 0));
+                gc.Append(temp);  // 0 по-умолчанию в файле, надеюсь, сойдет  // -1 коммит будет инитом
             }
         }
         public void Update(int fileNumber, int value) {
-            virtualFilesContent[fileNumber] = value;
+            virtualFiles[fileNumber] = value;
         }
         public int Commit() {
-            Dictionary<int, int> filesDescription = new Dictionary<int, int>(); // название файла : содержимое файла
-            // пробагемся по текущим файликам и по файликам с прошлого коммита(берем -1 элементу гиттрии)
-            // если файл отличается, то запосминаем его состояние
-            for(int i = 0; i< virtualFilesContent.Count; i++) {
+            for(int i = 0; i< gc.Count; i++) {
+                if (virtualFiles[i] == gc[i].Last()) {  // если текущее содержимое списка не равно значению в полсл коммите
+                    Dictionary<int, int> temp = new Dictionary<int, int>();
+                    temp.Add(, 0);
+                }
                 int filename = i;
                 int textContent = virtualFilesContent[i];
                 filesDescription.Add(filename, textContent);
             }
-            gitTree.Add(filesDescription);
             
             return gitTree.Count - 1;
         }

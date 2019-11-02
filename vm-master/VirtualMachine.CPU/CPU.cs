@@ -34,15 +34,20 @@ namespace VirtualMachine.CPU
             while (true)
             {
                 Step();
-                if (shouldStop)
+                if (shouldStop) {
                     break;
+                }
                 Thread.Sleep(StepDelay);
             }
         }
-        public void Exit()
-        {
+        public void Exit()  {
             shouldStop = true;
         }
+
+        public void Sleep(int delayTime) {
+            Thread.Sleep(TimeSpan.FromMilliseconds(delayTime));
+        }
+        
 
         private void Step()
         {

@@ -44,6 +44,7 @@ namespace VirtualMachine.CPU.InstructionSet
                 AddInstruction(new NAnd(a, b, dest));
             }
             AddInstruction(new exit());
+            AddInstruction(new Sleep());
 
         }
 

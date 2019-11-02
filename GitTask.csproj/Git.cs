@@ -10,16 +10,16 @@ namespace GitTask
         List<List<(int, int)>> gc = new List<List<(int, int)>>(); 
         // [[( номер коммита , содержимое файла ), ( номер коммита , содержимое файла )  ]    // индекс во внешнем листе - номер файла
         // [( номер коммита , содержимое файла ), ( номер коммита , содержимое файла ) ]]     // индекс во внутренних, количество изменения файла
-        List<int> virtualFiles = new List<int>();
+        List<int> virtualFiles = new List<int>();  // текущее состояние файлов 
         private int commitCount = 0; // ахах
-        SortedSet<int> changedFilesAfterLastCommit = new SortedSet<int>();
+        SortedSet<int> changedFilesAfterLastCommit = new SortedSet<int>(); // сет для хранения измененных файлов с последнего коммита
 
         public Git(int filesCount) {// индекс листа - название файла
             for (int filename = 0; filename < filesCount; filename++) {
                 List<(int, int)> temp = new List<(int, int)>();
-                temp.Add((-1, 0));
-                gc.Add(temp);  // 0 по-умолчанию в файле, надеюсь, сойдет  // -1 коммит будет инитом
-                virtualFiles.Add(0);
+                temp.Add((-1, 0));  // 0 по-умолчанию в файле, надеюсь, сойдет  // -1 коммит будет инитом
+                gc.Add(temp);  
+                virtualFiles.Add(0);  
             }
         }
         public void Update(int fileNumber, int value) {
@@ -28,7 +28,7 @@ namespace GitTask
         }
         public int Commit() {
             foreach (var i in changedFilesAfterLastCommit) {
-                if (virtualFiles[i] != gc[i].Last().Item2) {  // если текущее содержимое списка не равно значению в полсл коммите
+                if (virtualFiles[i] != gc[i].Last().Item2) {  
                     gc[i].Add( (commitCount, virtualFiles[i]) );
                 }
             }
@@ -39,7 +39,6 @@ namespace GitTask
         }
 
         public int Checkout(int commitNumber, int fileNumber) {
-            int fileContent = 0;
 
             if (commitNumber >= commitCount) {
                 throw new ArgumentException();
@@ -58,11 +57,8 @@ namespace GitTask
                 }
 
             } 
-            
-            fileContent = gc[fileNumber][commit].Item2;    
-            
-
-        return fileContent;  // надеюсь что не вернется -1
+                        
+            return gc[fileNumber][commit].Item2;
 
         }
     }

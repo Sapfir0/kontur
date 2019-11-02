@@ -8,6 +8,7 @@ namespace VirtualMachine.CPU
     public class Cpu : ICpu
     {
         private static readonly Word InstructionPointerAddress = Word.Zero;
+        private bool shouldStop;
 
         public Cpu(IInstructionSet instructionSet, ISupervisor supervisor)
         {
@@ -33,8 +34,14 @@ namespace VirtualMachine.CPU
             while (true)
             {
                 Step();
+                if (shouldStop)
+                    break;
                 Thread.Sleep(StepDelay);
             }
+        }
+        public void Exit()
+        {
+            shouldStop = true;
         }
 
         private void Step()

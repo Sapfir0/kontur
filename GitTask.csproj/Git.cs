@@ -12,6 +12,7 @@ namespace GitTask
         // [( номер коммита , содержимое файла ), ( номер коммита , содержимое файла ) ]]     // индекс во внутренних, количество изменения файла
         List<int> virtualFiles = new List<int>();
         private int commitCount = 0; // ахах
+        SortedSet<int> changedFilesAfterLastCommit = new SortedSet<int>();
 
         public Git(int filesCount) {// индекс листа - название файла
             for (int filename = 0; filename < filesCount; filename++) {
@@ -23,13 +24,15 @@ namespace GitTask
         }
         public void Update(int fileNumber, int value) {
             virtualFiles[fileNumber] = value;
+            changedFilesAfterLastCommit.Add(fileNumber);
         }
         public int Commit() {
-            for(int i = 0; i< gc.Count; i++) {
+            foreach (var i in changedFilesAfterLastCommit) {
                 if (virtualFiles[i] != gc[i].Last().Item2) {  // если текущее содержимое списка не равно значению в полсл коммите
                     gc[i].Add( (commitCount, virtualFiles[i]) );
                 }
             }
+            changedFilesAfterLastCommit.Clear();
 
             commitCount += 1;
             return commitCount - 1;
@@ -38,21 +41,26 @@ namespace GitTask
         public int Checkout(int commitNumber, int fileNumber) {
             int fileContent = 0;
 
-            for (int i = 0; i < gc[fileNumber].Count; i++) {
-                try {
-                    if (gc[fileNumber][i].Item1 == commitNumber) {
-                        fileContent = gc[fileNumber][i].Item2;
-                    }
-                }
-                catch (ArgumentOutOfRangeException) {
-                    throw new ArgumentException();
-                }
-
-            }
-
-            if (fileContent == -1 || commitNumber >= commitCount) {
+            if (commitNumber >= commitCount) {
                 throw new ArgumentException();
             }
+            
+            int commit = gc[fileNumber].BinarySearch((commitNumber, -1),
+                Comparer<(int, int)>.Create(
+                    ((int, int) x, (int, int) y) => x.Item1.CompareTo(y.Item1)
+                    )
+                );
+            
+            if (commit < 0) {
+                commit = ~commit - 1;
+                if (commit < 0) {
+                    return 0;
+                }
+
+            } 
+            
+            fileContent = gc[fileNumber][commit].Item2;    
+            
 
         return fileContent;  // надеюсь что не вернется -1
 
